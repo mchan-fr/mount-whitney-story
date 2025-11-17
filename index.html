@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Story Export</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+*{box-sizing:border-box}
+html,body{
+  min-height:100%;
+  height:auto;
+  margin:0;
+  overflow-x:hidden;
+  overflow-y:auto;
+  background:#000;
+  overscroll-behavior:auto;
+}
+img,video{display:block;max-width:100%;height:auto}
+
+.text-shadow{text-shadow:0 2px 8px rgba(0,0,0,.55)}
+.reveal-line{opacity:0;transform:translateY(6px);transition:.35s ease}
+.reveal-line.visible{opacity:1;transform:translateY(0)}
+.fullbleed{width:100vw!important;max-width:100vw!important;margin-left:calc(50% - 50vw)!important;margin-right:calc(50% - 50vw)!important}
+.breakout-large{width:56rem;max-width:calc(100vw - 2rem);position:relative;left:50%;transform:translateX(-50%)}
+
+/* Hero */
+.sb-hero{position:relative;height:100vh;max-height:1000px;min-height:480px}
+.sb-hero .media{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.sb-hero .overlay{position:absolute;inset:0;display:flex;flex-direction:column;z-index:10;padding:1rem}
+.sb-hero .overlay.items-start{justify-content:flex-start}
+.sb-hero .overlay.items-end{justify-content:flex-end}
+.sb-hero .overlay.items-center{justify-content:center}
+.sb-hero .overlay.justify-start{align-items:flex-start}
+.sb-hero .overlay.justify-end{align-items:flex-end}
+.sb-hero .overlay.justify-center{align-items:center}
+.pt-20{padding-top:5rem}.pb-20{padding-bottom:5rem}.pl-20{padding-left:5rem}.pr-20{padding-right:5rem}
+
+/* Split Panel (if used) */
+.split-panel-wrapper{width:100%;position:relative}
+.split-panel-container{position:relative;min-height:200vh}
+.split-panel-row{position:absolute;width:100%;min-height:100vh}
+.split-panel-row:first-child{top:0}
+.split-panel-row:last-child{top:100vh}
+.split-panel-row::after{content:"";display:table;clear:both}
+.split-image-sticky{position:fixed;top:0;width:50%;height:100vh;z-index:1;opacity:0;clip-path:inset(100% 0 0 0);transition:clip-path 0s linear,opacity 0.3s ease;will-change:clip-path;transform:translateZ(0);backface-visibility:hidden}
+.split-panel-row:first-child .split-image-sticky{left:0}
+.split-panel-row:last-child .split-image-sticky{right:0}
+.split-panel-reversed .split-panel-row:first-child .split-image-sticky{left:auto;right:0}
+.split-panel-reversed .split-panel-row:last-child .split-image-sticky{right:auto;left:0}
+.split-image-content{width:100%;height:100%}
+.split-image-content img,.split-image-content video{width:100%;height:100%;object-fit:cover;display:block}
+.split-text-scroll{width:50%;min-height:100vh;float:left;display:flex;align-items:center;justify-content:center;padding:3rem;box-sizing:border-box;position:relative;z-index:2;-webkit-font-smoothing:antialiased}
+.split-panel-row:first-child .split-text-scroll{float:right}
+.split-panel-row:last-child .split-text-scroll{float:left}
+.split-panel-reversed .split-panel-row:first-child .split-text-scroll{float:left}
+.split-panel-reversed .split-panel-row:last-child .split-text-scroll{float:right}
+.split-text-inner{width:100%;max-width:800px}
+.split-panel-wrapper ~ *{position:relative;z-index:3;background:inherit}
+
+
+/* Pair fade (only if _wipeOverPrev used) */
+.sb-fadepair{position:relative;height:var(--fadeH,200vh)}
+.sb-fade-prev{position:relative;height:100vh}
+.sb-fade-next{position:sticky;top:0;height:100vh;opacity:var(--fadeOpacity,0);transition:opacity 0.1s linear;will-change:opacity}
+.sb-fade-prev>*{min-height:100vh}.sb-fade-next>*{min-height:100vh}
+
+/* Per-block fade: opacity only (no transform) */
+[data-fade-scroll="true"]{
+  transition:opacity .6s ease-out;
+}
+</style>
+  </head>
+  <body>
+    <section class="sb-hero fullbleed overflow-hidden"><img class="media" src="media/10_above_clouds.JPEG" alt="">
+      <div class="overlay items-end justify-start">
+        <div class="max-w-4xl px-4 pb-20 pl-20" style="transform:translate(0px,0px);">
+          <h1 class="text-left" style="color:#ffa257;font-size:80px;font-family:system-ui;font-weight:700;font-style:normal;line-height:1.2;text-shadow:0 2px 8px rgba(0,0,0,0.55);">Hiking<br/>Among<br/>The Clouds</h1>
+          <div class="text-left mt-3" style="color:#ffffff;font-size:22px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.2;text-shadow:0 2px 8px rgba(0,0,0,0.55);">We expected a long trek to the top of Mount Whitney.<br/>What we got was a grueling footslog that pushed us to our limits.</div>
+        </div>
+      </div></section>
+<style>.photo-lede-side-drop-cap::first-letter{float:left;font-size:56px;line-height:47px;padding-right:10px;margin-top:2px;color:#fbbf24;font-weight:bold;}.photo-lede-side-drop-cap::first-line{font-size:24px;font-weight:400;color:#ffffff;}</style><section class="pt-24 pb-16 px-6" style="background-color:#000000;" data-fade-scroll="true"><div style="display:flex;gap:0;"><div style="width:50%;height:100vh;display:flex;align-items:center;justify-content:center;padding-left:0;padding-right:40px;"><div class="max-w-lg mx-auto"><p class="photo-lede-side-drop-cap" style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">When we woke up in the wee hours of September 20, we saw something we hadn't seen in days: clear skies.</p><p style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">It had been nonstop wet weather, and just a day earlier, we had heard that hikers were forced to turn around near the top of Mount Whitney because of blizzard conditions. It's not what you want to hear the day before your own attempt. </p><p style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">This was an important hike for us. My daughter is named after the mountain, and we'd always hoped to reach the summit together. (Before I had kids, I reached the top twice.)</p><p style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">We trained for months, subjecting ourselves to long, steep hikes on ankle-twisting terrain with packs filled with weights. But we knew that the weather would have the final say.</p><p style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">So to wake up to this view was promising. Energized, my daughter, son and I began our ascent to 14,505 feet. </p></div></div><div style="width:50%;height:100vh;flex-shrink:0;"><img src="media/06_stars.JPG" style="width:100%;height:100%;object-fit:cover;" alt=""></div></div></section>
+<style>.photo-lede-side-drop-cap::first-letter{float:left;font-size:56px;line-height:47px;padding-right:10px;margin-top:2px;color:#fbbf24;font-weight:bold;}.photo-lede-side-drop-cap::first-line{font-size:24px;font-weight:600;color:#ffffff;}</style><section class="pt-16 pb-0 px-6" style="background-color:#000000;" data-fade-scroll="true"><div style="display:flex;gap:0;"><div style="width:50%;height:100vh;flex-shrink:0;"><div style="position:relative;width:100%;height:100%;"><video id="photo-lede-side-video-g5umwt340" autoplay muted loop playsinline src="media/03_water_crossing.mov" style="width:100%;height:100%;object-fit:cover;"></video><button onclick="toggleMute('photo-lede-side-video-g5umwt340', this)" style="position:absolute;bottom:20px;left:20px;width:44px;height:44px;background:rgba(0,0,0,0.7);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:100;" aria-label="Toggle mute"><svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/><path d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" opacity="0.3" class="unmuted-path"/><line x1="2" y1="2" x2="22" y2="22" stroke="white" stroke-width="2" class="muted-line" style="display:none;"/></svg></button></div></div><div style="width:50%;height:100vh;display:flex;align-items:center;justify-content:center;padding-left:40px;padding-right:0;"><div class="max-w-lg mx-auto"><h3 style="color:#ffa257;font-size:24px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.5;margin-bottom:24px;">2:32 a.m. (half an hour into the hike)</h3><p class="photo-lede-side-drop-cap" style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">There's nothing technically difficult about the main trail when it's free of snow and ice. Still, you do have to watch almost every step you take, especially at night. </p><p style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">There's little risk of falling off a cliff during the early parts of the hike. But when you climb above 12,000 feet, the drop-offs become steep, the altitude can make you weak and dizzy, and the trail exposes you to strong winds and severe weather. </p><p style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">(Recently, two hikers on this trail fell off a cliff. One suffered traumatic brain injury, but survived. The other did not.) </p><p style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">We've just begun our hike, so we're only around 8,800 feet up at this point. Our focus is navigating the darkness.</p><p style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">(To hear the rushing water, unmute in the lower left corner.)</p></div></div></div></section>
+<style>.split-panel-drop-cap-0{font-weight:400;}.split-panel-drop-cap-0::first-letter{float:left;font-size:56px;line-height:47px;padding-right:10px;margin-top:2px;color:#fbbf24;font-weight:bold;}.split-panel-drop-cap-0::first-line{font-size:24px;font-weight:400;color:#ffffff;}.split-panel-drop-cap-1{font-weight:400;}.split-panel-drop-cap-1::first-letter{float:left;font-size:56px;line-height:47px;padding-right:10px;margin-top:2px;color:#fbbf24;font-weight:bold;}.split-panel-drop-cap-1::first-line{font-size:24px;font-weight:600;color:#ffffff;}</style><div class="split-panel-wrapper split-panel-reversed" id="split-panel-1v4rh0pl7" style="background-color:#000000;"><div class="split-panel-container" style="background-color:#000000;"><section class="split-panel-row" style="background-color:#000000;"><div class="split-text-scroll pt-16 pb-16" style="background-color:#000000;"><div class="split-text-inner max-w-lg"><h3 class="text-left mb-6" style="color:#ffa257;font-size:24px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;">6:04 a.m. (4 hours into the hike)</h3><div class="leading-relaxed" style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;"><p class="mb-4 split-panel-drop-cap-0">Daylight comes. After hiking for hours by headlamp, the rising sun reveals the hard, jagged, beautiful landscape we've been traversing. We're close to 11,000 feet. I feel like I've been transported.</p><p class="mb-4 ">So far, we've been moving at a steady pace, but the higher we go, the slower we'll go. Griffin is a faster hiker, but it's important for Whitney to go at a pace that's sustainable. The weather may have the final say, but the altitude can have as loud a voice.</p><p class="mb-4 ">Far off in the distance (upper left corner of the photo), we catch our first glimpse of the famous golden hue (or "alpenglow") of the main Mount Whitney massif. </p><p class="mb-4 ">That's around 13,000 feet. It's where we're headed.</p></div></div></div><div class="split-image-sticky"><div class="split-image-content"><img src="media/09_first_sight.jpeg" alt=""></div></div></section><section class="split-panel-row" style="background-color:#000000;"><div class="split-image-sticky"><div class="split-image-content"><img src="media/11_Whitney_Griffin_hiking.jpeg" alt=""></div></div><div class="split-text-scroll pt-16 pb-16" style="background-color:#000000;"><div class="split-text-inner max-w-lg"><h3 class="text-left mb-6" style="color:#ffa257;font-size:24px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;">7:26 a.m. (5-1/2 hours into the hike)</h3><div class="leading-relaxed" style="color:#e0e8f5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;"><p class="mb-4 split-panel-drop-cap-1">The clear skies didn't last for long. </p><p class="mb-4 ">A sea of clouds slowly creeps up behind us. We're at an elevation of around 11,700 feet. </p><p class="mb-4 ">The sun is out, yet it feels colder. The altitude is making us breathe a little harder. </p><p class="mb-4 ">We run into only one other person on this leg of the trail. It's a tall, young guy who passes us, but then takes a wrong turn, and ends up behind us. </p><p class="mb-4 ">Even though this is a well-worn trail, it's not always obvious which way to go. That's why we have GPS-enabled maps on our phones (I'm using FarOut). </p></div></div></div></section></div></div>
+<section class="relative pt-8 pb-16" style="background-color:#000000;">
+  <div class="relative z-10 px-8 max-w-4xl mx-auto"><div class="leading-relaxed" style="color:#374151;font-size:16px;font-family:system-ui;font-weight:400;font-style:normal;"><p></p></div></div></section>
+<section class="fullbleed"><div class="rounded overflow-hidden"><img class='w-full' src='media/12_near_Trail_Camp.jpeg'></div></section>
+<style>.transition-drop-cap::first-letter{float:left;font-size:56px;line-height:47px;padding-right:10px;margin-top:2px;color:#fbbf24;font-weight:bold;}.transition-drop-cap::first-line{font-size:24px;font-weight:600;color:#ffffff;}</style><section class="pt-16 pb-16 px-6" style="background-color:#000000;"><div class="transition-text mx-auto max-w-4xl"><h3 style="color:#ffa257;font-size:24px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.5;margin-bottom:24px;">8:37 a.m. (6-1/2 hours into the hike)</h3><p class="transition-drop-cap" style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">We make it to Trail Camp, which is above 12,000 feet. For context, we started our hike at just under 8,400 feet.</p><p style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">When you're above 8,000 feet, the Cleveland Clinic says you shouldn't ascend more than 1,640 feet per day. We've already doubled that amount. If we reach the summit, we'll more than triple the recommended daily limit.</p><p style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">We're 6 miles in with 5 more to the top. And it's a hard 5, starting with a section known as the "99 switchbacks." It's more than 2 miles long and ascends around 1,800 feet. It can become dangerous when there's snow or ice on it (we packed micro-spikes just in case).</p><p style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">We take a short breather by a small lake and gird ourselves for what's to come.</p></div></section>
+<section class="fullbleed" style="background-color:#000000;padding-top:0;padding-bottom:0;" data-fade-scroll="true">
+      <div style="display:grid;grid-template-columns:50vw 1fr;grid-template-rows:repeat(2, 50vh);gap:15px;width:100%;height:auto;"><div style="grid-column:1;grid-row:1 / 3;position:relative;overflow:hidden;min-height:200px;"><img src="media/13_Tarn.JPG" style="width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block;" alt=""><div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,0.8),transparent);color:#e5e7eb;font-size:14px;padding:20px 12px 12px;text-align:center;">We take a break by the tarn next to Trail Camp.</div></div><div style="grid-column:2;grid-row:1;position:relative;overflow:hidden;min-height:200px;"><img src="media/14_switchbacks02.jpeg" style="width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block;" alt=""><div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,0.8),transparent);color:#e5e7eb;font-size:14px;padding:20px 12px 12px;text-align:center;">Whitney and Griffin on the 99 Switchbacks.</div></div><div style="grid-column:2;grid-row:2;position:relative;overflow:hidden;min-height:200px;"><img src="media/15_switchbacks03.jpeg" style="width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block;" alt=""><div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,0.8),transparent);color:#e5e7eb;font-size:14px;padding:20px 12px 12px;text-align:center;">The clouds stay at bay for now.</div></div></div>
+    </section>
+<section class="relative pt-24 pb-24" style="background-color:#000000;">
+  <div class="relative z-10 px-8 max-w-4xl mx-auto"><div class="leading-relaxed" style="color:#374151;font-size:16px;font-family:system-ui;font-weight:400;font-style:normal;"><p></p></div></div></section>
+<style>.split-panel-drop-cap-0{font-weight:400;}.split-panel-drop-cap-0::first-letter{float:left;font-size:56px;line-height:47px;padding-right:10px;margin-top:2px;color:#fbbf24;font-weight:bold;}.split-panel-drop-cap-0::first-line{font-size:24px;font-weight:600;color:#ffffff;}.split-panel-drop-cap-1{font-weight:400;}.split-panel-drop-cap-1::first-letter{float:left;font-size:56px;line-height:47px;padding-right:10px;margin-top:2px;color:#fbbf24;font-weight:bold;}.split-panel-drop-cap-1::first-line{font-size:24px;font-weight:600;color:#ffffff;}</style><div class="split-panel-wrapper" id="split-panel-q3x428kh5" style="background-color:#000000;"><div class="split-panel-container" style="background-color:#000000;"><section class="split-panel-row" style="background-color:#000000;"><div class="split-image-sticky"><div class="split-image-content"><div style="position:relative;width:100%;height:100%;"><video id="split-panel-q3x428kh5-video-0" autoplay muted loop playsinline src="media/17_Trail_Crest.MOV" style="width:100%;height:100%;object-fit:cover;"></video><button onclick="toggleMute('split-panel-q3x428kh5-video-0', this)" style="position:absolute;bottom:20px;left:20px;width:44px;height:44px;background:rgba(0,0,0,0.7);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:100;" aria-label="Toggle mute"><svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/><path d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" opacity="0.3" class="unmuted-path"/><line x1="2" y1="2" x2="22" y2="22" stroke="white" stroke-width="2" class="muted-line" style="display:none;"/></svg></button></div></div></div><div class="split-text-scroll pt-16 pb-24" style="background-color:#000000;"><div class="split-text-inner max-w-lg"><h3 class="text-left mb-6" style="color:#ffa257;font-size:24px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;">12:45 p.m. (almost 11 hours into the hike)</h3><div class="leading-relaxed" style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;"><p class="mb-4 split-panel-drop-cap-0">We reach Trail Crest at 13,654 feet. It's significant on several fronts.</p><p class="mb-4 ">First, it marks the end of the 99 switchbacks and the start of the final and toughest leg: 2.8 miles to the summit.</p><p class="mb-4 ">Second, this is where blizzard conditions the day before forced hikers to abandon their summit bid. As you can see, there's little protection from storms or strong winds along the narrow ridge.</p><p class="mb-4 ">Thus far, the weather has been perfect. (Unmute in the lower left to hear the light wind.)</p><p class="mb-4 ">And third, this is as far as we got last year when Whitney and I made our first attempt. On that occasion, Whitney felt ill from the altitude. She wanted to push on, but I made the call to descend. </p><p class="mb-4 ">Today was a big improvement, even though our pace was slow.</p></div></div></div></section><section class="split-panel-row" style="background-color:#000000;"><div class="split-text-scroll pt-16 pb-24" style="background-color:#000000;"><div class="split-text-inner max-w-lg"><h3 class="text-left mb-6" style="color:#ffa257;font-size:24px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;">Don't Look Down</h3><div class="leading-relaxed" style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;"><p class="mb-4 split-panel-drop-cap-1">Remember when I said there was little risk of falling off a cliff until you're above 12,000 feet? </p><p class="mb-4 ">This is what I meant. The video was taken about 4 feet from the middle of the trail. There are many steep drop-offs like this along the last leg.</p><p class="mb-4 ">On top of that, if you see dark clouds coming, this sign  becomes more important. That hissing (bullet #3) may not be a snake.</p></div><div class="my-6 mx-auto " style="max-width:24rem;"><img src="media/20_danger_sign.jpeg" class="w-full rounded" alt=""></div></div></div><div class="split-image-sticky"><div class="split-image-content"><div style="position:relative;width:100%;height:100%;"><video id="split-panel-q3x428kh5-video-1" autoplay muted loop playsinline src="media/19_Trail_Crest_cliff.MOV" style="width:100%;height:100%;object-fit:cover;"></video><button onclick="toggleMute('split-panel-q3x428kh5-video-1', this)" style="position:absolute;bottom:20px;left:20px;width:44px;height:44px;background:rgba(0,0,0,0.7);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:100;" aria-label="Toggle mute"><svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/><path d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" opacity="0.3" class="unmuted-path"/><line x1="2" y1="2" x2="22" y2="22" stroke="white" stroke-width="2" class="muted-line" style="display:none;"/></svg></button></div></div></div></section></div></div>
+<style>.split-panel-drop-cap-0{font-weight:400;}.split-panel-drop-cap-0::first-letter{float:left;font-size:56px;line-height:47px;padding-right:10px;margin-top:2px;color:#fbbf24;font-weight:bold;}.split-panel-drop-cap-0::first-line{font-size:24px;font-weight:600;color:#ffffff;}.split-panel-drop-cap-1{font-weight:400;}.split-panel-drop-cap-1::first-letter{float:left;font-size:56px;line-height:47px;padding-right:10px;margin-top:2px;color:#fbbf24;font-weight:bold;}.split-panel-drop-cap-1::first-line{font-size:24px;font-weight:600;color:#ffffff;}</style><div class="split-panel-wrapper" id="split-panel-aiqj7j6df" style="background-color:#000000;"><div class="split-panel-container" style="background-color:#000000;"><section class="split-panel-row" style="background-color:#000000;"><div class="split-image-sticky"><div class="split-image-content"><div style="position:relative;width:100%;height:100%;"><video id="split-panel-aiqj7j6df-video-0" autoplay muted loop playsinline src="media/22_slow_steps.MOV" style="width:100%;height:100%;object-fit:cover;"></video><button onclick="toggleMute('split-panel-aiqj7j6df-video-0', this)" style="position:absolute;bottom:20px;left:20px;width:44px;height:44px;background:rgba(0,0,0,0.7);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:100;" aria-label="Toggle mute"><svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/><path d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" opacity="0.3" class="unmuted-path"/><line x1="2" y1="2" x2="22" y2="22" stroke="white" stroke-width="2" class="muted-line" style="display:none;"/></svg></button></div></div></div><div class="split-text-scroll pt-16 pb-16" style="background-color:#000000;"><div class="split-text-inner max-w-lg"><h3 class="text-left mb-6" style="color:#ffa257;font-size:24px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;">Higher and Slower</h3><div class="leading-relaxed" style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;"><p class="mb-4 split-panel-drop-cap-0">For those who have never felt the effects of high altitudes, hiking another 2.8 miles can feel insurmountable, especially when the terrain seems determined to wreck your legs.</p><p class="mb-4 ">Each step takes effort and the breathing only gets harder since you're above 13,500 feet the rest of the way. </p><p class="mb-4 ">Meanwhile, your brain tells you that you've gone too far to turn back, just as your body insists you still have much too far to go.</p><p class="mb-4 ">There's a delicate balance of pushing yourself to the limits but not endangering yourself or the group.</p></div></div></div></section><section class="split-panel-row" style="background-color:#000000;"><div class="split-text-scroll pt-16 pb-16" style="background-color:#000000;"><div class="split-text-inner max-w-lg"><h3 class="text-left mb-6" style="color:#ffa257;font-size:24px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;">Mt. Whitney's 'Windows'</h3><div class="leading-relaxed" style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;"><p class="mb-4 split-panel-drop-cap-1">Most of the time along the high, narrow ridge, you have the security of a rock wall to your right in case you need to lean against something. But there are a number of short sections known as "windows" where there are no walls, and you feel a bit like you're walking a tightrope. </p><p class="mb-4 ">Granted, it's a tightrope that's roughly 6 feet wide, but if you're already feeling unsteady because of fatigue, it can be a little precarious. It doesn't help that strong gusts of wind can blow through these windows.</p></div></div></div><div class="split-image-sticky"><div class="split-image-content"><div style="position:relative;width:100%;height:100%;"><video id="split-panel-aiqj7j6df-video-1" autoplay muted loop playsinline src="media/23_dropoffs_either_side.MOV" style="width:100%;height:100%;object-fit:cover;"></video><button onclick="toggleMute('split-panel-aiqj7j6df-video-1', this)" style="position:absolute;bottom:20px;left:20px;width:44px;height:44px;background:rgba(0,0,0,0.7);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:100;" aria-label="Toggle mute"><svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/><path d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" opacity="0.3" class="unmuted-path"/><line x1="2" y1="2" x2="22" y2="22" stroke="white" stroke-width="2" class="muted-line" style="display:none;"/></svg></button></div></div></div></section></div></div>
+<section class="relative pt-16 pb-16" data-fade-scroll="true" style="background-color:#000000;">
+  <div class="relative z-10 px-8 max-w-4xl mx-auto"><div class="leading-relaxed" style="color:#374151;font-size:16px;font-family:system-ui;font-weight:400;font-style:normal;"><p></p></div></div></section>
+<section class="fullbleed"><div class="rounded overflow-hidden"><video class='w-full' controls src='media/21_FB_cliff.MOV'></video></div></section>
+<style>.photo-lede-side-drop-cap::first-letter{float:left;font-size:56px;line-height:47px;padding-right:10px;margin-top:2px;color:#fbbf24;font-weight:bold;}.photo-lede-side-drop-cap::first-line{font-size:24px;font-weight:600;color:#ffffff;}</style><section class="pt-16 pb-16 px-6" style="background-color:#000000;"><div style="display:flex;gap:0;"><div style="width:50%;height:100vh;display:flex;align-items:center;justify-content:center;padding-left:0;padding-right:40px;"><div class="max-w-lg mx-auto"><h3 style="color:#ffa257;font-size:24px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.5;margin-bottom:24px;">3:45 p.m. (almost 14 hours into the hike)</h3><p class="photo-lede-side-drop-cap" style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">Whitney gives a thumbs-up, but make no mistake of it — the fatigue caused by the altitude is hitting her. We're at 14,047 feet with still about half a mile to go.</p><p style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">For the past mile or so, we've forced ourselves not to think about the total distance left. Instead, we focused only on the next 0.1 mile to cover. (The bigger the challenge,  the smaller the pieces you need to chunk the challenge into.) </p><p style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">Every couple hundred steps or so, I check my GPS map and give an update on whether we covered that 0.1 mile. Each time we do, it gives us a sense of accomplishment and fuels the next 0.1.  This approach keeps us moving forward.</p></div></div><div style="width:50%;height:100vh;flex-shrink:0;"><img src="media/25_Whitney_thumbsup.jpeg" style="width:100%;height:100%;object-fit:cover;" alt=""></div></div></section>
+<style>.transition-drop-cap::first-letter{float:left;font-size:56px;line-height:47px;padding-right:10px;margin-top:2px;color:#fbbf24;font-weight:bold;}.transition-drop-cap::first-line{font-size:24px;font-weight:600;color:#ffffff;}</style><section class="pt-16 pb-16 px-6" style="background-color:#000000;" data-fade-scroll="true"><div class="transition-photo mx-auto mb-12 max-w-4xl"><img src="media/27_shed_sighted.jpeg" class="w-full rounded-lg" alt=""><div class="mt-4 text-center"><div style="color:#fbbf24;font-size:20px;font-weight:bold;margin-bottom:8px;font-family:IBM Plex Sans, sans-serif;"></div><p style="color:#aaaaaa;font-size:16px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:italic;line-height:1.5;margin:0;"></p></div></div><div class="transition-text mx-auto max-w-4xl"><h3 style="color:#ffa257;font-size:24px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.5;margin-bottom:24px;">4:53 p.m. (15 hours into the hike)</h3><p class="transition-drop-cap" style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">We see the hut. Officially known as the Smithsonian Institution Shelter, it represents the top of Mount Whitney. The finish line is now within view.</p><p style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">We run into Griffin who has already summited and is now descending. For much of the hike, he's had to fight his urge to move faster. So during the final mile, I tell him to go on ahead. I know the general rule is to stay together, but the path is straightforward at this point.   </p></div></section>
+<style>.photo-lede-side-drop-cap::first-letter{float:left;font-size:56px;line-height:47px;padding-right:10px;margin-top:2px;color:#fbbf24;font-weight:bold;}.photo-lede-side-drop-cap::first-line{font-size:24px;font-weight:600;color:#ffffff;}</style><section class="pt-16 pb-16 px-6" style="background-color:#000000;" data-fade-scroll="true"><div style="display:flex;gap:0;"><div style="width:50%;height:100vh;flex-shrink:0;"><div style="position:relative;width:100%;height:100%;"><video id="photo-lede-side-video-vszrold2h" autoplay muted loop playsinline src="media/00_08_top.mov" style="width:100%;height:100%;object-fit:cover;"></video><button onclick="toggleMute('photo-lede-side-video-vszrold2h', this)" style="position:absolute;bottom:20px;left:20px;width:44px;height:44px;background:rgba(0,0,0,0.7);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:100;" aria-label="Toggle mute"><svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/><path d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" opacity="0.3" class="unmuted-path"/><line x1="2" y1="2" x2="22" y2="22" stroke="white" stroke-width="2" class="muted-line" style="display:none;"/></svg></button></div></div><div style="width:50%;height:100vh;display:flex;align-items:center;justify-content:center;padding-left:40px;padding-right:0;"><div class="max-w-lg mx-auto"><h3 style="color:#ffa257;font-size:24px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.5;margin-bottom:24px;">We summit at 4:58 p.m.</h3><p class="photo-lede-side-drop-cap" style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">We reach the shelter. Whitney did it! As the video shows, it's a moment of extreme pride and pure exhaustion.</p><p style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">Another proud papa moment. It's the first fourteener for Whitney and Griffin, and my third time to the top of this mountain. </p><p style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">It's pretty late in the day to be at the top, and fast hikers would already be near the end of the 22-mile trek at this point. But the good weather combined with my kids' perseverance gives me confidence we'll be fine. </p><p style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">I allow ourselves a moment to literally bask in the sun and the moment. We earned it.</p></div></div></div></section>
+<section class="fullbleed" style="background-color:#000000;padding-top:50px;padding-bottom:0;" data-fade-scroll="true">
+      <div style="display:grid;grid-template-columns:2fr 1fr;grid-template-rows:80vh;gap:30px;width:100%;height:auto;"><div style="grid-column:1;grid-row:1;position:relative;overflow:hidden;min-height:200px;"><img src="media/31_Whitney_summit_sign.jpeg" style="width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block;" alt=""></div><div style="grid-column:2;grid-row:1;position:relative;overflow:hidden;min-height:200px;"><img src="media/32_Whitney_Marcus_summit_sign.jpeg" style="width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block;" alt=""></div></div>
+    </section>
+<section class="relative pt-24 pb-24" style="background-color:#000000;">
+  <div class="relative z-10 px-8 max-w-4xl mx-auto"><div class="leading-relaxed" style="color:#374151;font-size:16px;font-family:system-ui;font-weight:400;font-style:normal;"><p></p></div></div></section>
+
+      <div class="sb-zoom-spacer" style="height: 5vh; background: #000000;"></div>
+      <section class="sb-zoomsec" id="zoom-ghf3zp" style="background:#000000;"
+        data-scale-end="2.6"
+        data-fade-in="0.18"
+        data-fade-out="0.25"
+        data-panel-start="0.3"
+        data-panel-end="0.72"
+        data-focus-x="0.79" data-focus-y="0.9"
+        data-activate-at="0.35">
+        <div class="sb-zoom-pin">
+          <img class="sb-zoom-photo" src="media/33_register.jpeg" alt="Zoom photo" />
+          <div class="sb-zoom-vignette"></div>
+          
+        </div>
+      </section>
+    
+<style>.transition-drop-cap::first-letter{float:left;font-size:56px;line-height:47px;padding-right:10px;margin-top:2px;color:#fbbf24;font-weight:bold;}.transition-drop-cap::first-line{font-size:24px;font-weight:600;color:#ffffff;}</style><section class="pt-24 pb-16 px-6" style="background-color:#000000;" data-fade-scroll="true"><div class="transition-photo mx-auto mb-12 max-w-6xl"><img src="media/35_FB_Keeler_Needle.jpeg" class="w-full rounded-lg" alt=""><div class="mt-4 text-center"><div style="color:#fbbf24;font-size:20px;font-weight:bold;margin-bottom:8px;font-family:IBM Plex Sans, sans-serif;"></div><p style="color:#aaaaaa;font-size:16px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:italic;line-height:1.5;margin:0;"></p></div></div><div class="transition-text mx-auto max-w-4xl"><h3 style="color:#ffa257;font-size:24px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.5;margin-bottom:24px;">5:49 p.m. (almost 16 hours into the hike)</h3><p class="transition-drop-cap" style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">We begin our descent and try to cover as much ground as we can before the sun goes down. Once we lose light, trails can disappear and the chances of something bad happening increase greatly.</p><p style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">The clouds begin to reach us, but I'm amazed at how calm they are. The winds continue to softly blow. Everything is so peaceful. </p><p style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">As the sun begins to set, the colors change from a soft white to an amber to a cool blue-gray. Mother Nature puts on a stunning light show. I wish we could enjoy it, but I know darkness is coming.</p></div></section>
+<section class="fullbleed" style="background-color:#000000;padding-top:30px;padding-bottom:50px;" data-fade-scroll="true">
+      <div style="display:grid;grid-template-columns:50vw 1fr;grid-template-rows:repeat(2, 50vh);gap:50px;width:100%;height:auto;"><div style="grid-column:1;grid-row:1 / 3;position:relative;overflow:hidden;min-height:200px;"><video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block;"><source src="media/36_descent.MP4" type="video/mp4"></video></div><div style="grid-column:2;grid-row:1;position:relative;overflow:hidden;min-height:200px;"><img src="media/00_09_Grif_clouds.jpeg" style="width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block;" alt=""></div><div style="grid-column:2;grid-row:2;position:relative;overflow:hidden;min-height:200px;"><img src="media/37_Whitney.jpeg" style="width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block;" alt=""></div></div>
+    </section>
+<section class="fullbleed" style="background-color:#000000;padding-top:0;padding-bottom:0;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:100vh;gap:50px;width:100%;height:auto;"><div style="grid-column:1;grid-row:1;position:relative;overflow:hidden;min-height:200px;"><img src="media/41_golden_hour.jpeg" style="width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block;" alt=""></div><div style="grid-column:2;grid-row:1;position:relative;overflow:hidden;min-height:200px;"><img src="media/42_golden_hour.jpeg" style="width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block;" alt=""></div></div>
+    </section>
+<section class="fullbleed" style="background-color:#000000;padding-top:50px;padding-bottom:50px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:100vh;gap:50px;width:100%;height:auto;"><div style="grid-column:1;grid-row:1;position:relative;overflow:hidden;min-height:200px;"><img src="media/43_steep_steps.jpeg" style="width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block;" alt=""></div><div style="grid-column:2;grid-row:1;position:relative;overflow:hidden;min-height:200px;"><img src="media/44_headlamps.jpeg" style="width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block;" alt=""></div></div>
+    </section>
+<section class="relative pt-24 pb-24" style="background-color:#000000;">
+  <div class="relative z-10 px-8 max-w-4xl mx-auto"><div class="leading-relaxed" style="color:#374151;font-size:16px;font-family:system-ui;font-weight:400;font-style:normal;"><p></p></div></div></section>
+<style>.transition-drop-cap::first-letter{float:left;font-size:56px;line-height:47px;padding-right:10px;margin-top:2px;color:#fbbf24;font-weight:bold;}.transition-drop-cap::first-line{font-size:24px;font-weight:600;color:#ffffff;}</style><section class="pt-0 pb-16 px-6" style="background-color:#000000;" data-fade-scroll="true"><div class="transition-photo mx-auto mb-12 max-w-6xl"><img src="media/45_FB_headlamps.jpeg" class="w-full rounded-lg" alt=""><div class="mt-4 text-center"><div style="color:#fbbf24;font-size:20px;font-weight:bold;margin-bottom:8px;font-family:IBM Plex Sans, sans-serif;"></div><p style="color:#aaaaaa;font-size:16px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:italic;line-height:1.5;margin:0;"></p></div></div><div class="transition-text mx-auto max-w-4xl"><h3 style="color:#ffa257;font-size:24px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.5;margin-bottom:24px;">7:27 p.m. (17-1/2 hours into the hike)</h3><p class="transition-drop-cap" style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">Our headlamps are on again. We're not close to the 99 switchbacks. </p><p style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">The altitude starts to hit me. Even though we've been descending for more than an hour, we're still above 13,500 feet. I have a slight headache and feel cold, even though I have five layers on. </p><p style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">At one point my kids tell me to rest, but I tell them that the only thing that's going to make me feel better is descending. At this point, 11,000 sounds really good.</p></div></section>
+<style>.photo-lede-side-drop-cap::first-letter{float:left;font-size:56px;line-height:47px;padding-right:10px;margin-top:2px;color:#fbbf24;font-weight:bold;}.photo-lede-side-drop-cap::first-line{font-size:24px;font-weight:600;color:#ffffff;}</style><section class="pt-4 pb-16 px-6" style="background-color:#000000;"><div style="display:flex;gap:0;"><div style="width:50%;height:100vh;flex-shrink:0;"><img src="media/00_10_poncho.jpeg" style="width:100%;height:100%;object-fit:cover;" alt=""></div><div style="width:50%;height:100vh;display:flex;align-items:center;justify-content:center;padding-left:40px;padding-right:0;"><div class="max-w-lg mx-auto"><h3 style="color:#ffa257;font-size:24px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.5;margin-bottom:24px;">1:31 a.m. (almost 24 hours into the hike)</h3><p class="photo-lede-side-drop-cap" style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">For us mere mortals, doing Mount Whitney in one day is going to be a long day no matter what. But you're preparing for 15 or 16 hours of continuous hiking, not 24-plus hours. That's nuts. But that's what happened.</p><p style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">As we descended below 13,000 feet, Whitney and Griffin seemed to get stronger. But I started to run out of gas. At one point I lost my balance from exhaustion and fell to the ground. Weirdly, I sort of just bounced right back up. So we kept moving. </p><p style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">We made a couple of wrong turns, which added to our time and fatigue.</p><p style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">This is one of the few photos taken during the last 8 miles of the hike because we were focused on only one thing: getting off this mountain.<br/></p></div></div></div></section>
+<style>.transition-drop-cap::first-letter{float:left;font-size:56px;line-height:47px;padding-right:10px;margin-top:2px;color:#fbbf24;font-weight:bold;}.transition-drop-cap::first-line{font-size:24px;font-weight:600;color:#ffffff;}</style><section class="pt-16 pb-16 px-6" style="background-color:#000000;"><div class="transition-photo mx-auto mb-12 max-w-4xl"><img src="media/00_11_sunrise.JPG" class="w-full rounded-lg" alt=""><div class="mt-4 text-center"><div style="color:#fbbf24;font-size:20px;font-weight:bold;margin-bottom:8px;font-family:IBM Plex Sans, sans-serif;">6:42 a.m. (almost 29 hours into the hike)</div><p style="color:#aaaaaa;font-size:16px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:italic;line-height:1.5;margin:0;"></p></div></div><div class="transition-text mx-auto max-w-4xl"><h3 style="color:#ffa257;font-size:24px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.5;margin-bottom:24px;">Epilogue</h3><p class="transition-drop-cap" style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">You know it was a long day when you got to see the sunrise twice during the same hike.</p><p style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">When we reached our car, we saw other folks walking around the portal. Their day was just beginning. Ours was finally ending. We hadn't slept in more than a day.</p><p style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">For each of us, it was an intense experience that was both humbling and confidence-building. This was physically and mentally the hardest thing any of us have faced. This wasn't the challenge we prepared for nor expected, but it was the challenge we got. And we rose to it. </p><p style="color:#e5e5e5;font-size:18px;font-family:IBM Plex Sans, sans-serif;font-weight:400;font-style:normal;line-height:1.7;margin-bottom:20px;">All 14,505 feet of it.</p></div></section>
+    <script>
+(function(){
+  var els = document.querySelectorAll('[data-fade-scroll="true"]');
+  if(!els.length) return;
+  
+  var ticking = false;
+  
+  function checkVisibility(){
+    if(ticking) return;
+    ticking = true;
+    
+    requestAnimationFrame(function(){
+      var vh = window.innerHeight;
+      
+      for(var i = 0; i < els.length; i++){
+        var el = els[i];
+        if(el.style.opacity === '1') continue;
+        
+        var rect = el.getBoundingClientRect();
+        if(rect.top < vh * 0.85){
+          el.style.opacity = '1';
+        }
+      }
+      
+      ticking = false;
+    });
+  }
+  
+  function onScroll(){
+    if(scrollCount === 1){
+      setTimeout(checkVisibility, 50);
+    } else {
+      checkVisibility();
+    }
+    scrollCount++;
+  }
+  
+  var scrollCount = 0;
+  
+  // Hide blocks below viewport after page loads
+  setTimeout(function(){
+    var vh = window.innerHeight;
+    for(var i = 0; i < els.length; i++){
+      var el = els[i];
+      var rect = el.getBoundingClientRect();
+      if(rect.top > vh * 0.5){
+        el.style.opacity = '0';
+      }
+    }
+  }, 100);
+  
+  window.addEventListener('scroll', onScroll, {passive: true});
+})();</script>
+    <script>
+(function(){
+  function clamp(n,a,b){return Math.max(a,Math.min(b,n))}
+  function lerp(a,b,t){return a+(b-a)*t}
+  function easeOut(t){return 1-Math.pow(1-t,2)}
+  function easeInOut(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2}
+  function wire(sec){
+    const pin=sec.querySelector('.sb-zoom-pin');
+    const img=sec.querySelector('.sb-zoom-photo');
+    const panel=sec.querySelector('.sb-zoom-panel');
+    const maxScale=parseFloat(sec.dataset.scaleEnd||'2.6');
+    const fadeInCut=parseFloat(sec.dataset.fadeIn||'0.18');
+    const fadeOutCut=parseFloat(sec.dataset.fadeOut||'0.18');
+    const panelStart=parseFloat(sec.dataset.panelStart||'0.3');
+    const panelEnd=parseFloat(sec.dataset.panelEnd||'0.72');
+    const fx=parseFloat(sec.dataset.focusX||'0.5');
+    const fy=parseFloat(sec.dataset.focusY||'0.5');
+    let ticking=false;
+    function onScroll(){ if(!ticking){ requestAnimationFrame(update); ticking=true; } }
+    function update(){
+      ticking=false;
+      const r=sec.getBoundingClientRect();
+      const vh=innerHeight;
+      if(r.bottom<=-vh||r.top>=vh*1.5){ pin.style.display='none'; return; }
+      const p=Math.max(0,Math.min(1,(vh-r.top)/(r.height+vh)));
+      pin.style.display='block';
+      let opacity=1;
+      if(p<fadeInCut){opacity=easeOut(p/Math.max(fadeInCut,0.0001));}
+      else if(p>1-fadeOutCut){const t=(1-p)/Math.max(fadeOutCut,0.0001);opacity=easeOut(t);}
+      const midStart=fadeInCut,midEnd=1-fadeOutCut;
+      const midT=Math.max(0,Math.min(1,(p-midStart)/Math.max((midEnd-midStart),0.0001)));
+      const s=lerp(1,maxScale,easeInOut(midT));
+      img.style.transformOrigin=(fx*100)+'% '+(fy*100)+'%';
+      img.style.opacity=opacity.toFixed(4);
+      img.style.transform='translate3d(0,0,0) scale('+s.toFixed(4)+')';
+      if(panel){
+        const showPanel=p>=panelStart&&p<=panelEnd;
+        if(showPanel){
+          const local=(p-panelStart)/Math.max(panelEnd-panelStart,0.0001);
+          const inT=local<0.5? local/0.5 : 1;
+          const outT=local>0.7? (local-0.7)/0.3 : 0;
+          const alpha=Math.max(0,Math.min(1,easeOut(inT)*(1-outT)));
+          panel.style.opacity=alpha.toFixed(4);
+          const y=lerp(12,0,easeInOut(local));
+          panel.style.transform='translateX(-50%) translateY('+y+'px)';
+        } else {
+          panel.style.opacity='0';
+        }
+      }
+    }
+    window.addEventListener('scroll',onScroll,{passive:true});
+    window.addEventListener('resize',onScroll);
+    window.addEventListener('load',update);
+    update();
+  }
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',function(){
+      const secs=document.querySelectorAll('.sb-zoomsec');
+      secs.forEach(wire);
+    });
+  } else {
+    document.querySelectorAll('.sb-zoomsec').forEach(wire);
+  }
+})();</script>
+    <script>
+function toggleMute(videoId, button) {
+  const video = document.getElementById(videoId);
+  if (!video) return;
+  video.muted = !video.muted;
+  const mutedLine = button.querySelector('.muted-line');
+  const unmutedPath = button.querySelector('.unmuted-path');
+  if (video.muted) {
+    if (mutedLine) mutedLine.style.display = 'block';
+    if (unmutedPath) unmutedPath.style.opacity = '0.3';
+  } else {
+    if (mutedLine) mutedLine.style.display = 'none';
+    if (unmutedPath) unmutedPath.style.opacity = '1';
+  }
+}
+(function(){
+  // Find ALL split-panel-wrapper instances on the page
+  const wrappers=document.querySelectorAll('.split-panel-wrapper');
+  if(!wrappers.length)return;
+  
+  // Initialize each wrapper independently
+  wrappers.forEach(function(wrapper){
+    const container=wrapper.querySelector('.split-panel-container');
+    if(!container)return;
+    
+    const rows=container.querySelectorAll('.split-panel-row');
+    if(rows.length<2)return;
+    
+    const firstRow=rows[0];
+    const secondRow=rows[1];
+    
+    const firstImage=firstRow.querySelector('.split-image-sticky');
+    const secondImage=secondRow.querySelector('.split-image-sticky');
+    const secondText=secondRow.querySelector('.split-text-scroll');
+    if(!firstImage||!secondImage||!secondText)return;
+    
+    function checkScroll(){
+      const windowHeight=window.innerHeight;
+      const firstRowRect=firstRow.getBoundingClientRect();
+      const secondRowRect=secondRow.getBoundingClientRect();
+      const secondTextRect=secondText.getBoundingClientRect();
+      
+      // Hide images when the second panel's text has scrolled far past
+      if(secondTextRect.top < -windowHeight){
+        firstImage.style.display='none';
+        secondImage.style.display='none';
+        return;
+      }
+      
+      // Hide all images if container hasn't entered viewport yet
+      if(firstRowRect.top>=windowHeight){
+        firstImage.style.display='none';
+        secondImage.style.display='none';
+        return;
+      }
+      
+      // First panel image - stay visible until 1% remains in viewport
+      if(firstRowRect.top<windowHeight&&firstRowRect.bottom>windowHeight*0.01){
+        firstImage.style.display='block';
+        const revealAmount=Math.max(0,Math.min(windowHeight,windowHeight-firstRowRect.top));
+        const clipPercent=(revealAmount/windowHeight)*100;
+        firstImage.style.clipPath='inset('+(100-clipPercent)+'% 0 0 0)';
+        firstImage.style.opacity='1';
+      } else {
+        firstImage.style.display='none';
+      }
+      
+      // Second panel image - stay visible until 1% remains in viewport
+      if(secondRowRect.top<windowHeight&&secondRowRect.bottom>windowHeight*0.01){
+        secondImage.style.display='block';
+        const revealAmount=Math.max(0,Math.min(windowHeight,windowHeight-secondRowRect.top));
+        const clipPercent=(revealAmount/windowHeight)*100;
+        secondImage.style.clipPath='inset('+(100-clipPercent)+'% 0 0 0)';
+        secondImage.style.opacity='1';
+      } else {
+        secondImage.style.display='none';
+      }
+    }
+    
+    firstImage.style.transition='opacity 0.4s ease';
+    secondImage.style.transition='opacity 0.4s ease';
+    window.addEventListener('scroll',checkScroll,{passive:true});
+    window.addEventListener('resize',checkScroll);
+    window.addEventListener('load',checkScroll);
+    checkScroll();
+  });
+})();</script>
+  </body>
+</html>
