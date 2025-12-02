@@ -819,7 +819,7 @@ window.addEventListener('scroll', function() {
 }, {passive: true});
 </script>
 <script>
-/* MOBILE SPLIT PANEL - IMPROVED VERSION with smoother transitions */
+/* MOBILE SPLIT PANEL - FINAL VERSION with cross-fade and all blocks support */
 (function() {
   // Only run on mobile
   if (window.innerWidth > 768) return;
@@ -829,20 +829,26 @@ window.addEventListener('scroll', function() {
   // Create a fixed container at the top of the viewport
   var fixedContainer = document.createElement('div');
   fixedContainer.id = 'mobile-split-fixed';
-  fixedContainer.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; display: none; pointer-events: none; transition: opacity 0.3s ease-out;';
+  fixedContainer.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; display: none; pointer-events: none;';
   document.body.appendChild(fixedContainer);
 
-  // Image container (no gradient here)
+  // Image container
   var imgContainer = document.createElement('div');
-  imgContainer.style.cssText = 'width: 100%; height: ' + fixedHeight + 'px; background: #000; overflow: hidden;';
+  imgContainer.style.cssText = 'width: 100%; height: ' + fixedHeight + 'px; background: #000; overflow: hidden; position: relative;';
   fixedContainer.appendChild(imgContainer);
 
-  // Add image element
-  var activeImg = document.createElement('img');
-  activeImg.style.cssText = 'width: 100%; height: 100%; object-fit: cover; display: block;';
-  imgContainer.appendChild(activeImg);
+  // TWO image elements for cross-fade
+  var img1 = document.createElement('img');
+  img1.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity 0.4s ease-out; opacity: 1;';
+  imgContainer.appendChild(img1);
   
-  // Gradient BELOW the image (separate element)
+  var img2 = document.createElement('img');
+  img2.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity 0.4s ease-out; opacity: 0;';
+  imgContainer.appendChild(img2);
+  
+  var activeImgIndex = 1; // Track which img element is currently showing
+  
+  // Gradient BELOW the image
   var gradient = document.createElement('div');
   gradient.style.cssText = 'width: 100%; height: 80px; background: linear-gradient(to bottom, #000 0%, transparent 100%); margin-top: -1px;';
   fixedContainer.appendChild(gradient);
@@ -850,8 +856,9 @@ window.addEventListener('scroll', function() {
   var wrappers = document.querySelectorAll('.split-mobile-wrapper');
   var currentSrc = '';
   var isVisible = false;
+  var currentWrapperIndex = -1;
   
-  wrappers.forEach(function(wrapper) {
+  wrappers.forEach(function(wrapper, index) {
     // Hide the original images container completely
     var imagesContainer = wrapper.querySelector('.split-mobile-images');
     if (imagesContainer) {
@@ -863,35 +870,66 @@ window.addEventListener('scroll', function() {
     if (textContainer) {
       textContainer.style.paddingTop = fixedHeight + 'px';
     }
+    
+    // Store wrapper index for reference
+    wrapper.dataset.splitIndex = index;
   });
+
+  function crossFadeTo(newSrc) {
+    if (newSrc === currentSrc) return;
+    
+    currentSrc = newSrc;
+    
+    // Cross-fade: load new image into hidden element, then swap opacity
+    if (activeImgIndex === 1) {
+      img2.src = newSrc;
+      img2.onload = function() {
+        img1.style.opacity = '0';
+        img2.style.opacity = '1';
+        activeImgIndex = 2;
+      };
+    } else {
+      img1.src = newSrc;
+      img1.onload = function() {
+        img2.style.opacity = '0';
+        img1.style.opacity = '1';
+        activeImgIndex = 1;
+      };
+    }
+  }
 
   function update() {
     var viewportMiddle = window.innerHeight / 2;
     var activeSource = null;
     var shouldShow = false;
     var fadeAmount = 1;
+    var activeWrapperIndex = -1;
     
-    wrappers.forEach(function(wrapper) {
+    // Check ALL wrappers
+    for (var w = 0; w < wrappers.length; w++) {
+      var wrapper = wrappers[w];
       var rect = wrapper.getBoundingClientRect();
       var textContainer = wrapper.querySelector('.split-mobile-text');
       var textRect = textContainer ? textContainer.getBoundingClientRect() : rect;
       
-      // Calculate when to start fading out (when near end of split panel)
-      var fadeOutStart = fixedHeight + 100; // Start fading when text bottom is this far from top
-      var fadeOutEnd = fixedHeight; // Fully hidden when text bottom reaches this point
+      var fadeOutStart = fixedHeight + 100;
+      var fadeOutEnd = fixedHeight;
       
-      // Show fixed image when wrapper is in view
+      // Check if this wrapper is in view
       if (rect.top <= 0 && textRect.bottom > fadeOutEnd) {
         shouldShow = true;
+        activeWrapperIndex = w;
         
         // Calculate fade amount for smooth exit
         if (textRect.bottom < fadeOutStart) {
           fadeAmount = (textRect.bottom - fadeOutEnd) / (fadeOutStart - fadeOutEnd);
           fadeAmount = Math.max(0, Math.min(1, fadeAmount));
+        } else {
+          fadeAmount = 1;
         }
         
         var textSections = wrapper.querySelectorAll('.split-mobile-text-section');
-        var images = wrapper.querySelectorAll('.split-mobile-image img');
+        var images = wrapper.querySelectorAll('.split-mobile-image img, .split-mobile-image video');
         
         // Determine which panel is active
         var activePanel = 0;
@@ -905,25 +943,54 @@ window.addEventListener('scroll', function() {
         if (images[activePanel]) {
           activeSource = images[activePanel].src;
         }
+        
+        // Found active wrapper, no need to check more
+        break;
       }
-    });
+    }
+    
+    // Hide text that has scrolled past when leaving a split panel
+    if (currentWrapperIndex !== -1 && currentWrapperIndex !== activeWrapperIndex && !shouldShow) {
+      var prevWrapper = wrappers[currentWrapperIndex];
+      if (prevWrapper) {
+        var prevTextContainer = prevWrapper.querySelector('.split-mobile-text');
+        if (prevTextContainer) {
+          // Check if we're scrolling DOWN (leaving the split panel)
+          var prevRect = prevWrapper.getBoundingClientRect();
+          if (prevRect.bottom < window.innerHeight) {
+            // We've scrolled past - keep text hidden by not doing anything special
+            // The text will naturally be above the viewport
+          }
+        }
+      }
+    }
+    
+    currentWrapperIndex = activeWrapperIndex;
     
     if (shouldShow && activeSource) {
       if (!isVisible) {
         fixedContainer.style.display = 'block';
+        fixedContainer.style.opacity = '1';
         isVisible = true;
+        // Initialize first image immediately without crossfade
+        img1.src = activeSource;
+        img1.style.opacity = '1';
+        img2.style.opacity = '0';
+        currentSrc = activeSource;
+        activeImgIndex = 1;
+      } else {
+        crossFadeTo(activeSource);
       }
       fixedContainer.style.opacity = fadeAmount;
-      if (activeImg.src !== activeSource) {
-        activeImg.src = activeSource;
-      }
     } else {
       if (isVisible) {
         fixedContainer.style.opacity = '0';
+        fixedContainer.style.transition = 'opacity 0.3s ease-out';
         setTimeout(function() {
           if (fixedContainer.style.opacity === '0') {
             fixedContainer.style.display = 'none';
             isVisible = false;
+            currentSrc = '';
           }
         }, 300);
       }
@@ -942,7 +1009,10 @@ window.addEventListener('scroll', function() {
     });
     update();
   });
+  
+  // Run update immediately and after a short delay to ensure everything is loaded
   update();
+  setTimeout(update, 100);
 })();
 </script>
   </body>
