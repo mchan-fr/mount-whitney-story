@@ -819,7 +819,7 @@ window.addEventListener('scroll', function() {
 }, {passive: true});
 </script>
 <script>
-/* MOBILE SPLIT PANEL - FINAL VERSION using src swap */
+/* MOBILE SPLIT PANEL - FINAL VERSION using display toggle */
 (function() {
   // Only run on mobile
   if (window.innerWidth > 768) return;
@@ -833,23 +833,23 @@ window.addEventListener('scroll', function() {
     
     if (images.length < 2 || textSections.length < 2) return;
     
-    // Get the first image/video element (the one we'll swap src on)
-    var firstContainer = images[0];
-    var secondContainer = images[1];
+    var currentPanel = -1;
     
-    var firstMedia = firstContainer.querySelector('img, video');
-    var secondMedia = secondContainer.querySelector('img, video');
+    function showPanel(index) {
+      images.forEach(function(img, i) {
+        if (i === index) {
+          img.style.display = 'block';
+          img.style.opacity = '1';
+        } else {
+          img.style.display = 'none';
+          img.style.opacity = '0';
+        }
+      });
+    }
     
-    if (!firstMedia || !secondMedia) return;
-    
-    // Store original sources
-    var src0 = firstMedia.src || firstMedia.querySelector('source')?.src;
-    var src1 = secondMedia.src || secondMedia.querySelector('source')?.src;
-    
-    // Hide second container - we only use first one
-    secondContainer.style.display = 'none';
-    
-    var currentPanel = 0;
+    // Initial state - show first panel
+    showPanel(0);
+    currentPanel = 0;
     
     function update() {
       var viewportMiddle = window.innerHeight / 2;
@@ -864,16 +864,7 @@ window.addEventListener('scroll', function() {
       
       if (activePanel !== currentPanel) {
         currentPanel = activePanel;
-        
-        var newSrc = (activePanel === 0) ? src0 : src1;
-        
-        if (firstMedia.tagName === 'VIDEO') {
-          firstMedia.src = newSrc;
-          firstMedia.load();
-          firstMedia.play();
-        } else {
-          firstMedia.src = newSrc;
-        }
+        showPanel(activePanel);
       }
     }
     
