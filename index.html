@@ -417,7 +417,8 @@ img,video{display:block;max-width:100%;height:auto}
     }
   }
   /* ===========================================
-   MOBILE SPLIT PANEL FIX v2 - ADD TO END OF STYLE
+   MOBILE SPLIT PANEL FIX v3 - ADD TO END OF STYLE
+   Fixes: sticky not working, images not cross-fading
    =========================================== */
 
 @media (max-width: 768px) {
@@ -447,19 +448,24 @@ img,video{display:block;max-width:100%;height:auto}
     overflow: visible !important;
   }
   
-  /* STICKY FIX - Safari needs -webkit-sticky and parent overflow:visible */
+  /* CRITICAL: Body and html must allow sticky */
+  html, body {
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+  }
+  
+  /* Wrapper must have overflow visible for sticky to work */
   .split-mobile-wrapper {
     position: relative !important;
     overflow: visible !important;
-    -webkit-overflow-scrolling: touch;
+    display: block !important;
   }
   
+  /* THE STICKY CONTAINER */
   .split-mobile-images {
     position: -webkit-sticky !important;
     position: sticky !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
+    top: 0px !important;
     z-index: 100 !important;
     width: 100% !important;
     height: 45vh !important;
@@ -467,31 +473,18 @@ img,video{display:block;max-width:100%;height:auto}
     max-height: 400px !important;
     overflow: hidden !important;
     background: #000 !important;
+    display: block !important;
   }
   
-  /* Ensure ALL images are positioned correctly */
+  /* Stack all images on top of each other */
   .split-mobile-image {
     position: absolute !important;
     top: 0 !important;
     left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
     width: 100% !important;
     height: 100% !important;
-    /* First image visible by default, others hidden */
     transition: opacity 0.4s ease-out !important;
-  }
-  
-  /* Make sure first image is visible */
-  .split-mobile-image[data-panel="0"] {
-    opacity: 1 !important;
-    z-index: 2 !important;
-  }
-  
-  /* Second image initially hidden but positioned */
-  .split-mobile-image[data-panel="1"] {
-    opacity: 0 !important;
-    z-index: 1 !important;
+    background: #000 !important;
   }
   
   .split-mobile-image img,
@@ -503,15 +496,23 @@ img,video{display:block;max-width:100%;height:auto}
     display: block !important;
   }
   
+  /* Text container */
   .split-mobile-text {
     position: relative !important;
     z-index: 1 !important;
     background: #000 !important;
+    display: block !important;
   }
   
   .split-mobile-text-section {
     min-height: 70vh !important;
     padding: 2rem 1.5rem !important;
+    background: #000 !important;
+  }
+  
+  /* IMPORTANT: Remove any section overflow that might break sticky */
+  section {
+    overflow: visible !important;
   }
 }
 }
