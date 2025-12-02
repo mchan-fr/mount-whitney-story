@@ -419,7 +419,6 @@ img,video{display:block;max-width:100%;height:auto}
 }
   /* ===========================================
    MOBILE SPLIT PANEL FIX v3 - ADD TO END OF STYLE
-   Fixes: sticky not working, images not cross-fading
    =========================================== */
 
 @media (max-width: 768px) {
@@ -808,76 +807,6 @@ function toggleMute(videoId, button) {
     window.addEventListener('load',checkAndApply);
     checkAndApply();
   });
-})();</script><script>
-(function(){
-  function isMobile() {
-    return window.innerWidth <= 768;
-  }
-  
-  function initMobileSplitPanels() {
-    if (!isMobile()) return;
-    
-    var wrappers = document.querySelectorAll('.split-mobile-wrapper');
-    if (!wrappers.length) return;
-    
-    wrappers.forEach(function(wrapper) {
-      var imagesContainer = wrapper.querySelector('.split-mobile-images');
-      var images = wrapper.querySelectorAll('.split-mobile-image');
-      var textSections = wrapper.querySelectorAll('.split-mobile-text-section');
-      
-      if (!imagesContainer || !images.length || !textSections.length) return;
-      
-      var currentPanel = 0;
-      var ticking = false;
-      
-      function updateActiveImage() {
-        if (!isMobile()) return;
-        
-        var imagesRect = imagesContainer.getBoundingClientRect();
-        var triggerPoint = imagesRect.bottom;
-        
-        var activePanel = 0;
-        
-        for (var i = 0; i < textSections.length; i++) {
-          var section = textSections[i];
-          var rect = section.getBoundingClientRect();
-          
-          if (rect.top <= triggerPoint) {
-            activePanel = i;
-          }
-        }
-        
-        if (activePanel !== currentPanel) {
-          currentPanel = activePanel;
-          
-          for (var j = 0; j < images.length; j++) {
-            images[j].style.opacity = (j === activePanel) ? '1' : '0';
-          }
-        }
-      }
-      
-      function onScroll() {
-        if (!ticking) {
-          requestAnimationFrame(function() {
-            updateActiveImage();
-            ticking = false;
-          });
-          ticking = true;
-        }
-      }
-      
-      window.addEventListener('scroll', onScroll, { passive: true });
-      window.addEventListener('resize', updateActiveImage);
-      
-      setTimeout(updateActiveImage, 100);
-    });
-  }
-  
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initMobileSplitPanels);
-  } else {
-    initMobileSplitPanels();
-  }
 })();</script>
     <script>
 window.addEventListener('scroll', function() {
@@ -890,104 +819,66 @@ window.addEventListener('scroll', function() {
 }, {passive: true});
 </script>
 <script>
-/* MOBILE SPLIT PANEL RUNTIME v2 - ADD BEFORE </body> */
-(function(){
-  console.log('[MobileSplit] Initializing...');
+/* MOBILE SPLIT PANEL - FINAL VERSION using src swap */
+(function() {
+  // Only run on mobile
+  if (window.innerWidth > 768) return;
   
-  function isMobile() {
-    return window.innerWidth <= 768;
-  }
+  var wrappers = document.querySelectorAll('.split-mobile-wrapper');
+  if (!wrappers.length) return;
   
-  function initMobileSplitPanels() {
-    var wrappers = document.querySelectorAll('.split-mobile-wrapper');
-    console.log('[MobileSplit] Found wrappers:', wrappers.length);
+  wrappers.forEach(function(wrapper) {
+    var images = wrapper.querySelectorAll('.split-mobile-image');
+    var textSections = wrapper.querySelectorAll('.split-mobile-text-section');
     
-    if (!wrappers.length) return;
+    if (images.length < 2 || textSections.length < 2) return;
     
-    wrappers.forEach(function(wrapper, wrapperIndex) {
-      var imagesContainer = wrapper.querySelector('.split-mobile-images');
-      var images = wrapper.querySelectorAll('.split-mobile-image');
-      var textSections = wrapper.querySelectorAll('.split-mobile-text-section');
+    // Get the first image/video element (the one we'll swap src on)
+    var firstContainer = images[0];
+    var secondContainer = images[1];
+    
+    var firstMedia = firstContainer.querySelector('img, video');
+    var secondMedia = secondContainer.querySelector('img, video');
+    
+    if (!firstMedia || !secondMedia) return;
+    
+    // Store original sources
+    var src0 = firstMedia.src || firstMedia.querySelector('source')?.src;
+    var src1 = secondMedia.src || secondMedia.querySelector('source')?.src;
+    
+    // Hide second container - we only use first one
+    secondContainer.style.display = 'none';
+    
+    var currentPanel = 0;
+    
+    function update() {
+      var viewportMiddle = window.innerHeight / 2;
+      var activePanel = 0;
       
-      console.log('[MobileSplit] Wrapper', wrapperIndex, '- Images:', images.length, 'Text sections:', textSections.length);
-      
-      if (!imagesContainer || images.length < 2 || textSections.length < 2) {
-        console.log('[MobileSplit] Wrapper', wrapperIndex, 'missing elements, skipping');
-        return;
-      }
-      
-      // Store state on wrapper element
-      wrapper._currentPanel = 0;
-      wrapper._ticking = false;
-      
-      // Set initial state - first image visible, rest hidden
-      images.forEach(function(img, idx) {
-        img.style.opacity = idx === 0 ? '1' : '0';
-        img.style.zIndex = idx === 0 ? '2' : '1';
-      });
-      
-      function updateActiveImage() {
-        if (!isMobile()) return;
-        
-        var imagesRect = imagesContainer.getBoundingClientRect();
-        var triggerPoint = imagesRect.bottom;
-        
-        var activePanel = 0;
-        
-        for (var i = 0; i < textSections.length; i++) {
-          var section = textSections[i];
-          var rect = section.getBoundingClientRect();
-          
-          // When text section top reaches the bottom of sticky image area
-          if (rect.top <= triggerPoint + 20) {
-            activePanel = i;
-          }
-        }
-        
-        if (activePanel !== wrapper._currentPanel) {
-          console.log('[MobileSplit] Wrapper', wrapperIndex, 'switching to panel', activePanel);
-          wrapper._currentPanel = activePanel;
-          
-          images.forEach(function(img, idx) {
-            var newOpacity = (idx === activePanel) ? '1' : '0';
-            var newZIndex = (idx === activePanel) ? '2' : '1';
-            img.style.opacity = newOpacity;
-            img.style.zIndex = newZIndex;
-          });
+      for (var i = 0; i < textSections.length; i++) {
+        var rect = textSections[i].getBoundingClientRect();
+        if (rect.top < viewportMiddle) {
+          activePanel = i;
         }
       }
       
-      function onScroll() {
-        if (!wrapper._ticking) {
-          requestAnimationFrame(function() {
-            updateActiveImage();
-            wrapper._ticking = false;
-          });
-          wrapper._ticking = true;
+      if (activePanel !== currentPanel) {
+        currentPanel = activePanel;
+        
+        var newSrc = (activePanel === 0) ? src0 : src1;
+        
+        if (firstMedia.tagName === 'VIDEO') {
+          firstMedia.src = newSrc;
+          firstMedia.load();
+          firstMedia.play();
+        } else {
+          firstMedia.src = newSrc;
         }
       }
-      
-      window.addEventListener('scroll', onScroll, { passive: true });
-      window.addEventListener('resize', updateActiveImage);
-      
-      // Run immediately and after short delay
-      updateActiveImage();
-      setTimeout(updateActiveImage, 200);
-      
-      console.log('[MobileSplit] Wrapper', wrapperIndex, 'initialized');
-    });
-  }
-  
-  // Initialize when DOM ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initMobileSplitPanels);
-  } else {
-    initMobileSplitPanels();
-  }
-  
-  // Also run on load as backup
-  window.addEventListener('load', function() {
-    setTimeout(initMobileSplitPanels, 100);
+    }
+    
+    window.addEventListener('scroll', update, { passive: true });
+    update();
   });
 })();
 </script>
