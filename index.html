@@ -417,7 +417,7 @@ img,video{display:block;max-width:100%;height:auto}
     }
   }
   /* ===========================================
-   MOBILE SPLIT PANEL FIX - ADD TO END OF STYLE
+   MOBILE SPLIT PANEL FIX v2 - ADD TO END OF STYLE
    =========================================== */
 
 @media (max-width: 768px) {
@@ -444,25 +444,74 @@ img,video{display:block;max-width:100%;height:auto}
     height: auto !important;
     position: relative !important;
     left: auto !important;
+    overflow: visible !important;
   }
   
-  /* Ensure sticky works */
+  /* STICKY FIX - Safari needs -webkit-sticky and parent overflow:visible */
+  .split-mobile-wrapper {
+    position: relative !important;
+    overflow: visible !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  
   .split-mobile-images {
+    position: -webkit-sticky !important;
     position: sticky !important;
     top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
     z-index: 100 !important;
+    width: 100% !important;
     height: 45vh !important;
     min-height: 200px !important;
     max-height: 400px !important;
+    overflow: hidden !important;
+    background: #000 !important;
   }
   
+  /* Ensure ALL images are positioned correctly */
   .split-mobile-image {
     position: absolute !important;
-    inset: 0 !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    /* First image visible by default, others hidden */
+    transition: opacity 0.4s ease-out !important;
+  }
+  
+  /* Make sure first image is visible */
+  .split-mobile-image[data-panel="0"] {
+    opacity: 1 !important;
+    z-index: 2 !important;
+  }
+  
+  /* Second image initially hidden but positioned */
+  .split-mobile-image[data-panel="1"] {
+    opacity: 0 !important;
+    z-index: 1 !important;
+  }
+  
+  .split-mobile-image img,
+  .split-mobile-image video,
+  .split-mobile-media {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+  }
+  
+  .split-mobile-text {
+    position: relative !important;
+    z-index: 1 !important;
+    background: #000 !important;
   }
   
   .split-mobile-text-section {
     min-height: 70vh !important;
+    padding: 2rem 1.5rem !important;
   }
 }
 }
@@ -838,6 +887,108 @@ window.addEventListener('scroll', function() {
   var percent = (h[st]||b[st]) / ((h[sh]||b[sh]) - h.clientHeight) * 100;
   document.getElementById('progress-bar').style.width = percent + '%';
 }, {passive: true});
+</script>
+<script>
+/* MOBILE SPLIT PANEL RUNTIME v2 - ADD BEFORE </body> */
+(function(){
+  console.log('[MobileSplit] Initializing...');
+  
+  function isMobile() {
+    return window.innerWidth <= 768;
+  }
+  
+  function initMobileSplitPanels() {
+    var wrappers = document.querySelectorAll('.split-mobile-wrapper');
+    console.log('[MobileSplit] Found wrappers:', wrappers.length);
+    
+    if (!wrappers.length) return;
+    
+    wrappers.forEach(function(wrapper, wrapperIndex) {
+      var imagesContainer = wrapper.querySelector('.split-mobile-images');
+      var images = wrapper.querySelectorAll('.split-mobile-image');
+      var textSections = wrapper.querySelectorAll('.split-mobile-text-section');
+      
+      console.log('[MobileSplit] Wrapper', wrapperIndex, '- Images:', images.length, 'Text sections:', textSections.length);
+      
+      if (!imagesContainer || images.length < 2 || textSections.length < 2) {
+        console.log('[MobileSplit] Wrapper', wrapperIndex, 'missing elements, skipping');
+        return;
+      }
+      
+      // Store state on wrapper element
+      wrapper._currentPanel = 0;
+      wrapper._ticking = false;
+      
+      // Set initial state - first image visible, rest hidden
+      images.forEach(function(img, idx) {
+        img.style.opacity = idx === 0 ? '1' : '0';
+        img.style.zIndex = idx === 0 ? '2' : '1';
+      });
+      
+      function updateActiveImage() {
+        if (!isMobile()) return;
+        
+        var imagesRect = imagesContainer.getBoundingClientRect();
+        var triggerPoint = imagesRect.bottom;
+        
+        var activePanel = 0;
+        
+        for (var i = 0; i < textSections.length; i++) {
+          var section = textSections[i];
+          var rect = section.getBoundingClientRect();
+          
+          // When text section top reaches the bottom of sticky image area
+          if (rect.top <= triggerPoint + 20) {
+            activePanel = i;
+          }
+        }
+        
+        if (activePanel !== wrapper._currentPanel) {
+          console.log('[MobileSplit] Wrapper', wrapperIndex, 'switching to panel', activePanel);
+          wrapper._currentPanel = activePanel;
+          
+          images.forEach(function(img, idx) {
+            var newOpacity = (idx === activePanel) ? '1' : '0';
+            var newZIndex = (idx === activePanel) ? '2' : '1';
+            img.style.opacity = newOpacity;
+            img.style.zIndex = newZIndex;
+          });
+        }
+      }
+      
+      function onScroll() {
+        if (!wrapper._ticking) {
+          requestAnimationFrame(function() {
+            updateActiveImage();
+            wrapper._ticking = false;
+          });
+          wrapper._ticking = true;
+        }
+      }
+      
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', updateActiveImage);
+      
+      // Run immediately and after short delay
+      updateActiveImage();
+      setTimeout(updateActiveImage, 200);
+      
+      console.log('[MobileSplit] Wrapper', wrapperIndex, 'initialized');
+    });
+  }
+  
+  // Initialize when DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMobileSplitPanels);
+  } else {
+    initMobileSplitPanels();
+  }
+  
+  // Also run on load as backup
+  window.addEventListener('load', function() {
+    setTimeout(initMobileSplitPanels, 100);
+  });
+})();
 </script>
   </body>
 </html>
